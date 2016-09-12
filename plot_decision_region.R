@@ -1,6 +1,6 @@
 #plot 2D decision boundary
 # plot_decision_region <- function(x,y,model,nb_points_by_axe) {
-plot_decision_region <- function(data,nb_points_by_axe, model, ...) {
+plot_decision_region <- function(data, outcome_var, nb_points_by_axe, model, ...) {
         # nb_points_by_axe = 100
         
         # if ( is.integer(outcome_var) | is.numeric(outcome_var) ) 
@@ -64,7 +64,13 @@ plot_decision_region <- function(data,nb_points_by_axe, model, ...) {
         x2_seq = unique(x_grid[,2])
         contour(x1_seq, x2_seq, probs, levels=0.5, labels="", xlab="", ylab=""
                 , axes=FALSE)
-        points(data[,1],data[,2], col=ifelse(y==1, "coral", "cornflowerblue"))
+        # if (length(model$finalModel$y) == 0)
+        #         outc <- model$finalModel$learn$y else
+        #                 outc <- model$finalModel$y
+        
+        outc = data[,which(colnames(data)==outcome_var)]
+
+        points(data[,1],data[,2], col=ifelse(outc==1, "coral", "cornflowerblue"))
         points(x_grid, pch=".", cex=1, col=ifelse(probs<0.5, "coral", "cornflowerblue"))
         box()
 }
