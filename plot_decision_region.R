@@ -8,7 +8,8 @@ plot_decision_region <- function(data,nb_points_by_axe, model, ...) {
         
         # equation = as.character(attr(model,"predvars"))
         
-        predictors = model$final$xNames
+        # predictors = model$final$xNames
+        predictors = model$coefnames
         predictors = intersect(colnames(data),predictors) #keep simple vars
         
         df <- NULL
@@ -37,10 +38,24 @@ plot_decision_region <- function(data,nb_points_by_axe, model, ...) {
         
         x_grid = expand.grid(df)
         
-        preds <- predict(model, newdata=x_grid
-                         , type="prob"
-                         )
-        probs <- matrix(preds[,1], nb_points_by_axe, nb_points_by_axe)
+        probs <- tryCatch({
+                preds <- predict(model, newdata=x_grid
+                                 , type="prob"
+                )
+                matrix(preds[,1], nb_points_by_axe, nb_points_by_axe)
+        }, warning = function(e) {
+                preds <- predict(model, newdata=x_grid
+                                 # , type="prob"
+                )
+                message("probs generation warning")
+                return(matrix(preds, nb_points_by_axe, nb_points_by_axe))
+        })
+        
+        # preds <- predict(model, newdata=x_grid
+        #                  # , type="prob"
+        #                  )
+        # probs <- matrix(preds[,1], nb_points_by_axe, nb_points_by_axe)
+        
         par(mar=rep(2,4),pty="s")
         plot(data[,1],data[,2], type = "n")  # setting up coord. system
         # contour(x1_seq, x2_seq, probs, levels=0.5, labels="", xlab="", ylab=""
